@@ -26,7 +26,7 @@ app.get("/test", (req, res) => {
 });
 
 // load routes
-
+app.use("/api/users/", require("./routes/user"));
 
 // run server
 app.listen(port, () => {
