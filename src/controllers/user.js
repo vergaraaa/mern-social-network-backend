@@ -1,51 +1,60 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const { generateToken } = require('../services/jwt.js');
+
 // test action
 const testUser = (req, res) => {
     return res.status(200).send({
-        message: "Message sent from controllers/user.js"
+        message: "Message sent from controllers/user.js",
+        user: req.user,
     });
 };
 
 const login = async (req, res) => {
-    const { email, password } = req.body;
+    try {
+        const { email, password } = req.body;
 
-    if (!email || !password) {
-        return res.status(400).json({
+        if (!email || !password) {
+            return res.status(400).json({
+                status: "failure",
+                message: "Missing data"
+            });
+        }
+
+        // validate if user exists
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({
+                status: "failure",
+                message: "User not found",
+            });
+        }
+
+        // match password
+        const match = await bcrypt.compare(password, user.password);
+
+        if (!match) {
+            return res.status(401).json({
+                status: "failure",
+                message: "Incorrect credentials"
+            });
+        }
+
+        // token
+        const token = generateToken(user);
+
+        return res.status(200).json({
+            status: "success",
+            user: user,
+            token
+        });
+    } catch (error) {
+        return res.status(500).json({
             status: "failure",
-            message: "Missing data"
+            message: error.message
         });
     }
-
-    // validate user exists
-    const user = await User.findOne({ email });
-
-    if (!user) {
-        return res.status(404).json({
-            status: "failure",
-            message: "User not found",
-        });
-    }
-
-    // match password
-    const match = await bcrypt.compare(password, user.password);
-
-    if (!match) {
-        return res.status(401).json({
-            status: "failure",
-            message: "Incorrect credentials"
-        });
-    }
-
-    // token
-    const token = generateToken(user);
-
-    return res.status(200).json({
-        status: "success",
-        user: user,
-        token
-    });
 }
 
 const createUser = async (req, res) => {
