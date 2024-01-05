@@ -107,9 +107,34 @@ const createUser = async (req, res) => {
     }
 };
 
+const getUser = async (req, res) => {
+    let { id } = req.params;
+
+    try {
+        const user = await User.findById(id).select({ role: 0 });
+
+        if (!user) {
+            return res.status(404).json({
+                status: "failure",
+                message: "User not found",
+            });
+        }
+
+        return res.status(200).json({
+            status: "success",
+            user
+        });
+    } catch (error) {
+        return res.status(500).json({
+            status: "failure",
+            message: error.message
+        });
+    }
+}
 
 module.exports = {
     testUser,
     login,
     createUser,
+    getUser,
 }
