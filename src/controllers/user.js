@@ -159,10 +159,58 @@ const getUsers = async (req, res) => {
     }
 }
 
+const updateUser = async (req, res) => {
+    try {
+        let { exp, iat, role, image, ...userIdentity } = req.user;
+        let userToUpdate = req.body;
+
+        // check if email is taken
+        let user = await User.findOne({ email: userToUpdate.email });
+
+        if (user && user._id != userIdentity.id) {
+            return res.status(409).json({
+                status: "failure",
+                message: "Email already exists"
+            });
+        }
+
+        // check if username is taken
+        user = await User.findOne({ username: userToUpdate.username });
+
+        if (user) {
+            return res.status(409).json({
+                status: "failure",
+                message: "Username already exists"
+            });
+        }
+
+        // if password exists encrypt it
+        if (userToUpdate.password) {
+            const hashedPassword = await bcrypt.hash(userToUpdate.password, 10)
+            userToUpdate.password = hashedPassword;
+        }
+
+        // update
+        const updatedUser = await User.findByIdAndUpdate(userIdentity.id, userToUpdate, { new: true });
+
+        return res.status(200).json({
+            status: "success",
+            user: updatedUser,
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            status: "failure",
+            message: error.message
+        });
+    }
+}
+
 module.exports = {
     testUser,
     login,
     createUser,
     getUser,
     getUsers,
+    updateUser,
 }
