@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const { generateToken } = require('../services/jwt.js');
 const mongoosePagination = require('mongoose-pagination');
+const { use } = require('../routes/user.js');
 
 // test action
 const testUser = (req, res) => {
@@ -225,7 +226,7 @@ const uploadImage = async (req, res) => {
 
         // get file extension
         const imageSplit = image.split("\.");
-        const extension = imageSplit[1];
+        const extension = imageSplit[1].toLowerCase();
 
         console.log(extension);
 
@@ -242,10 +243,16 @@ const uploadImage = async (req, res) => {
             })
         }
         else {
+            let userUpdated = await User.findOneAndUpdate(
+                { _id: req.user.id },
+                { image: req.file.filename },
+                { new: true }
+            );
+
             return res.status(200).json({
                 status: "success",
+                user: userUpdated,
                 file: req.file,
-                files: req.files,
             });
         }
     } catch (error) {
