@@ -206,6 +206,21 @@ const updateUser = async (req, res) => {
     }
 }
 
+const uploadImage = async (req, res) => {
+    try {
+        return res.status(200).json({
+            status: "success",
+            file: req.file,
+            files: req.files,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            status: "failure",
+            message: error.message
+        });
+    }
+}
+
 module.exports = {
     testUser,
     login,
@@ -213,4 +228,5 @@ module.exports = {
     getUser,
     getUsers,
     updateUser,
+    uploadImage
 }
