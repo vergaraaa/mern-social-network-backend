@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const { generateToken } = require('../services/jwt.js');
@@ -208,11 +210,44 @@ const updateUser = async (req, res) => {
 
 const uploadImage = async (req, res) => {
     try {
-        return res.status(200).json({
-            status: "success",
-            file: req.file,
-            files: req.files,
-        });
+        let file = req.file;
+
+        // validate existence file 
+        if (!file) {
+            return res.status(409).json({
+                status: "failure",
+                message: "Image not provided",
+            });
+        }
+
+        // get filename
+        let image = file.originalname;
+
+        // get file extension
+        const imageSplit = image.split("\.");
+        const extension = imageSplit[1];
+
+        console.log(extension);
+
+        // validate extension
+        if (extension != "png" && extension != "jpg" &&
+            extension != "jpeg" && extension != "gif") {
+
+            // delete file if not valid
+            fs.unlink(req.file.path, (error) => {
+                return res.status(409).json({
+                    status: "failure",
+                    msg: "Invalid image format"
+                });
+            })
+        }
+        else {
+            return res.status(200).json({
+                status: "success",
+                file: req.file,
+                files: req.files,
+            });
+        }
     } catch (error) {
         return res.status(500).json({
             status: "failure",
