@@ -25,7 +25,36 @@ const saveFollow = async (req, res) => {
     }
 }
 
+const deleteFollow = async (req, res) => {
+    try {
+        let { id: userId } = req.user;
+        let { id: followedId } = req.params;
+
+        const follow = await Follow.findOneAndDelete({
+            "user": userId,
+            "followed": followedId,
+        });
+
+        if (!follow) {
+            return res.status(404).json({
+                status: "failure",
+                message: "Follow relation not found"
+            });
+        }
+
+        return res.status(200).json({
+            status: "success",
+            follow,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            status: "failure",
+            message: error.message
+        });
+    }
+}
 
 module.exports = {
     saveFollow,
+    deleteFollow,
 }
