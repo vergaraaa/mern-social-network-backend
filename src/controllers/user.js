@@ -4,7 +4,8 @@ const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const { generateToken } = require('../services/jwt.js');
 const mongoosePagination = require('mongoose-pagination');
-const { use } = require('../routes/user.js');
+const followService = require("../services/followUserIds.js");
+
 
 // test action
 const testUser = (req, res) => {
@@ -124,9 +125,14 @@ const getUser = async (req, res) => {
             });
         }
 
+        // following info
+        const followInfo = await followService.followThisUser(req.user.id, id);
+
         return res.status(200).json({
             status: "success",
-            user
+            user,
+            following: followInfo.following ?? {},
+            follower: followInfo.follower ?? {},
         });
     } catch (error) {
         return res.status(500).json({

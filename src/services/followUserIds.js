@@ -29,7 +29,16 @@ const followUserIds = async (userId) => {
 }
 
 const followThisUser = async (userId, profileUserId) => {
+    let following = await Follow
+        .findOne({ user: userId, followed: profileUserId });
 
+    let follower = await Follow
+        .findOne({ user: profileUserId, followed: userId });
+
+    return {
+        following,
+        follower,
+    }
 }
 
 module.exports = {
