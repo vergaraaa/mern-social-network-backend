@@ -144,13 +144,15 @@ const getUser = async (req, res) => {
 
 const getUsers = async (req, res) => {
     try {
-
         let page = !req.params.page ? 1 : parseInt(req.params.page);
 
         let itemsPerPage = 5;
 
         const total = await User.countDocuments({});
         const users = await User.find().sort("_id").paginate(page, itemsPerPage);
+
+        // following info
+        const followUserIds = await followService.followUserIds(req.user.id);
 
         return res.status(200).json({
             status: "success",
@@ -159,6 +161,8 @@ const getUsers = async (req, res) => {
             itemsPerPage,
             total,
             pages: Math.ceil(total / itemsPerPage),
+            userFollowing: followUserIds.following,
+            userFollowers: followUserIds.followers,
         });
     } catch (error) {
         return res.status(500).json({
