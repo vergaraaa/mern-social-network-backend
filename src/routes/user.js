@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const { validateToken } = require('../middlewares/auth');
-const { testUser, login, createUser, getUser, getUsers, updateUser, uploadImage } = require("../controllers/user");
+const { testUser, login, createUser, getUser, getUsers, updateUser, uploadImage, getImage } = require("../controllers/user");
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -28,6 +28,8 @@ router.route("/:id")
     .put(validateToken, updateUser);
 
 router.post("/upload-image", [validateToken, uploads.single("file")], uploadImage);
+
+router.get("/image/:file", validateToken, getImage);
 
 
 module.exports = router;
