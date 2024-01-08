@@ -73,7 +73,7 @@ const getFollowing = async (req, res) => {
         const following = await Follow
             .find({ user: userId })
             // .populate("user followed", "name lastname");
-            .populate("user followed", "-password -role -__v")
+            .populate("followed", "-password -role -__v")
             .paginate(page, itemsPerPage);
 
 
@@ -98,6 +98,34 @@ const getFollowing = async (req, res) => {
 
 const getFollowers = async (req, res) => {
     try {
+        let { id: userId } = req.user;
+
+        if (req.params.id) userId = req.params.id;
+
+        // check page
+        let page = req.params.page ? req.params.page : 1;
+
+        const itemsPerPage = 5;
+
+        const total = await Follow.find({ followed: userId }).countDocuments();
+
+        const followers = await Follow
+            .find({ followed: userId })
+            .populate("user", "-password -role -__v")
+            .paginate(page, itemsPerPage);
+
+        // get persons that i follow and follow me in common
+        const followUserIds = await followService.followUserIds(userId);
+
+        return res.status(200).json({
+            status: "success",
+            followers,
+            total,
+            pages: Math.ceil(total / itemsPerPage),
+            userFollowing: followUserIds.following,
+            userFollowers: followUserIds.followers,
+        });
+
         return res.status(200).json({
             status: "success",
         });
