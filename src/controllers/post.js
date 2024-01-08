@@ -29,7 +29,35 @@ const createPost = async (req, res) => {
     }
 }
 
+const deletePost = async (req, res) => {
+    try {
+        let { id } = req.params;
+
+        const post = await Post.findOneAndDelete({
+            _id: id,
+            user: req.user.id
+        });
+
+        if (!post) {
+            return res.status(404).json({
+                status: "failure",
+                message: "This post doesnt exist"
+            });
+        }
+
+        return res.status(200).json({
+            status: "success",
+            post,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            status: "failure",
+            message: error.message
+        });
+    }
+}
 
 module.exports = {
     createPost,
+    deletePost,
 }
