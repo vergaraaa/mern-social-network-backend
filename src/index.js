@@ -28,6 +28,7 @@ app.get("/test", (req, res) => {
 // load routes
 app.use("/api/users/", require("./routes/user"));
 app.use("/api/follows/", require("./routes/follow"));
+app.use("/api/posts/", require("./routes/post"));
 
 // run server
 app.listen(port, () => {
