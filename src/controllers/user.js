@@ -225,7 +225,7 @@ const uploadImage = async (req, res) => {
 
         // validate existence file 
         if (!file) {
-            return res.status(409).json({
+            return res.status(422).json({
                 status: "failure",
                 message: "Image not provided",
             });
@@ -238,33 +238,30 @@ const uploadImage = async (req, res) => {
         const imageSplit = image.split("\.");
         const extension = imageSplit[1].toLowerCase();
 
-        console.log(extension);
-
         // validate extension
         if (extension != "png" && extension != "jpg" &&
             extension != "jpeg" && extension != "gif") {
 
             // delete file if not valid
-            fs.unlink(req.file.path, (error) => {
+            return fs.unlink(req.file.path, (error) => {
                 return res.status(409).json({
                     status: "failure",
                     msg: "Invalid image format"
                 });
             })
         }
-        else {
-            let userUpdated = await User.findOneAndUpdate(
-                { _id: req.user.id },
-                { image: req.file.filename },
-                { new: true }
-            );
 
-            return res.status(200).json({
-                status: "success",
-                user: userUpdated,
-                file: req.file,
-            });
-        }
+        let userUpdated = await User.findOneAndUpdate(
+            { _id: req.user.id },
+            { image: req.file.filename },
+            { new: true }
+        );
+
+        return res.status(200).json({
+            status: "success",
+            user: userUpdated,
+            file: req.file,
+        });
     } catch (error) {
         return res.status(500).json({
             status: "failure",

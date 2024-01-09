@@ -1,5 +1,7 @@
+const fs = require('fs');
 const Post = require("../models/Post");
 const mongoosePagination = require('mongoose-pagination');
+
 const createPost = async (req, res) => {
     try {
         const body = req.body;
@@ -87,9 +89,76 @@ const getUserPosts = async (req, res) => {
     }
 }
 
+const uploadPostImage = async (req, res) => {
+    try {
+        let postId = req.params.id;
+        let file = req.file;
+
+        // validate existence file 
+        if (!file) {
+            return res.status(422).json({
+                status: "failure",
+                message: "Image not provided",
+            });
+        }
+
+        // get filename
+        let image = file.originalname;
+
+        // get file extension
+        const imageSplit = image.split("\.");
+        const extension = imageSplit[1].toLowerCase();
+
+        console.log(extension != "png" && extension != "jpg" &&
+            extension != "jpeg" && extension != "gif");
+
+        // validate extension
+        if (extension != "png" && extension != "jpg" &&
+            extension != "jpeg" && extension != "gif") {
+
+            // delete file if not valid
+            return fs.unlink(req.file.path, (error) => {
+                if (error) throw error;
+
+                return res.status(422).json({
+                    status: "failure",
+                    msg: "Invalid image format"
+                });
+            });
+        }
+
+        let postUpdated = await Post.findOneAndUpdate(
+            { user: req.user.id, _id: postId },
+            { file: req.file.filename },
+            { new: true }
+        );
+
+        if (!postUpdated) {
+            return fs.unlink(req.file.path, (error) => {
+                return res.status(404).json({
+                    status: "failure",
+                    msg: "Post doesnt exist"
+                });
+            });
+        }
+
+        return res.status(200).json({
+            status: "success",
+            user: postUpdated,
+            file: req.file,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            status: "failure",
+            message: error.message
+        });
+    }
+}
+
 
 module.exports = {
     createPost,
     deletePost,
     getUserPosts,
+    uploadPostImage,
 }
