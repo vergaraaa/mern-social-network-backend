@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const router = Router();
 const multer = require('multer');
-const { createPost, deletePost, getUserPosts, uploadPostImage } = require("../controllers/post");
+const { createPost, deletePost, getUserPosts, uploadPostImage, getImage } = require("../controllers/post");
 const { validateToken } = require('../middlewares/auth');
 
 const storage = multer.diskStorage({
@@ -24,6 +24,8 @@ router.get("/user/:id/:page?", validateToken, getUserPosts);
 router.post("/upload-image/:id", [
     uploads.single("file"), validateToken
 ], uploadPostImage);
+
+router.get("/image/:file", validateToken, getImage);
 
 
 module.exports = router;

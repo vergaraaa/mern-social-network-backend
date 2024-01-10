@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const Post = require("../models/Post");
 const mongoosePagination = require('mongoose-pagination');
 
@@ -155,10 +156,40 @@ const uploadPostImage = async (req, res) => {
     }
 }
 
+const getImage = async (req, res) => {
+    try {
+        // get url param
+        let { file } = req.params;
+
+        // create path
+        const filePath = "./src/uploads/posts/" + file;
+
+        // validate file existence
+        fs.stat(filePath, (error, exists) => {
+            if (!exists) {
+                return res.status(404).json({
+                    status: "failure",
+                    msg: "Image not found",
+                    file,
+                    filePath,
+                });
+            }
+
+            return res.sendFile(path.resolve(filePath));
+        });
+    } catch (error) {
+        return res.status(500).json({
+            status: "failure",
+            message: error.message
+        });
+    }
+}
+
 
 module.exports = {
     createPost,
     deletePost,
     getUserPosts,
     uploadPostImage,
+    getImage,
 }
