@@ -3,6 +3,8 @@ const path = require('path');
 const Post = require("../models/Post");
 const mongoosePagination = require('mongoose-pagination');
 
+const followService = require("../services/followUserIds");
+
 const createPost = async (req, res) => {
     try {
         const body = req.body;
@@ -185,6 +187,39 @@ const getImage = async (req, res) => {
     }
 }
 
+const getFeed = async (req, res) => {
+    try {
+        // get page
+        let page = req.params.page ? parseInt(req.params.page) : 1
+
+        const itemsPerPage = 5;
+
+        // get following
+        const { following } = await followService.followUserIds(req.user.id);
+
+        const total = await Post.find({ user: { $in: following } }).countDocuments();
+
+        // get posts
+        const posts = await Post
+            .find({ user: { $in: following } })
+            .populate("user", "-__v -password -role -email")
+            .sort("-created_at")
+            .paginate(page, itemsPerPage);
+
+        return res.status(200).json({
+            status: "success",
+            total,
+            page,
+            pages: Math.ceil(total / itemsPerPage),
+            posts,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            status: "failure",
+            message: error.message
+        });
+    }
+}
 
 module.exports = {
     createPost,
@@ -192,4 +227,5 @@ module.exports = {
     getUserPosts,
     uploadPostImage,
     getImage,
+    getFeed,
 }
