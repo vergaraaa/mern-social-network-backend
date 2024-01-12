@@ -149,7 +149,11 @@ const getUsers = async (req, res) => {
         let itemsPerPage = 5;
 
         const total = await User.countDocuments({});
-        const users = await User.find().sort("_id").paginate(page, itemsPerPage);
+        const users = await User
+            .find()
+            .select("-password -role -__v -email")
+            .sort("_id")
+            .paginate(page, itemsPerPage);
 
         // following info
         const followUserIds = await followService.followUserIds(req.user.id);

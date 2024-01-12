@@ -73,7 +73,7 @@ const getFollowing = async (req, res) => {
         const following = await Follow
             .find({ user: userId })
             // .populate("user followed", "name lastname");
-            .populate("followed", "-password -role -__v")
+            .populate("followed", "-password -role -__v -email")
             .paginate(page, itemsPerPage);
 
 
@@ -111,7 +111,7 @@ const getFollowers = async (req, res) => {
 
         const followers = await Follow
             .find({ followed: userId })
-            .populate("user", "-password -role -__v")
+            .populate("user", "-password -role -__v -email")
             .paginate(page, itemsPerPage);
 
         // get persons that i follow and follow me in common
@@ -124,10 +124,6 @@ const getFollowers = async (req, res) => {
             pages: Math.ceil(total / itemsPerPage),
             userFollowing: followUserIds.following,
             userFollowers: followUserIds.followers,
-        });
-
-        return res.status(200).json({
-            status: "success",
         });
     } catch (error) {
         return res.status(500).json({

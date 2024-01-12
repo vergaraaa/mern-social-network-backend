@@ -75,7 +75,7 @@ const getUserPosts = async (req, res) => {
         const posts = await Post
             .find({ user: userId })
             .sort("-created_at")
-            .populate("user", "-password -role -__v")
+            .populate("user", "-password -role -__v -email")
             .paginate(page, itemsPerPage);
 
         return res.status(200).json({
