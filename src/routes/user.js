@@ -19,7 +19,7 @@ router.get("/test", validateToken, testUser);
 
 router.post("/login", login);
 
-router.get("/stats", validateToken, getStats);
+router.get("/stats/:id?", validateToken, getStats);
 
 router.post("/register", createUser);
 
@@ -29,9 +29,9 @@ router.route("/:id")
     .get(validateToken, getUser)
     .put(validateToken, updateUser);
 
-router.post("/upload-image", [validateToken, uploads.single("file")], uploadImage);
+router.post("/upload-image", uploads.single("file"), uploadImage);
 
-router.get("/image/:file", validateToken, getImage);
+router.get("/image/:file", getImage);
 
 
 

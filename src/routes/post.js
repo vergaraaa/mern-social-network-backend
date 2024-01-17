@@ -25,7 +25,7 @@ router.post("/upload-image/:id", [
     uploads.single("file"), validateToken
 ], uploadPostImage);
 
-router.get("/image/:file", validateToken, getImage);
+router.get("/image/:file", getImage);
 
 router.get("/feed/:page?", validateToken, getFeed);
 

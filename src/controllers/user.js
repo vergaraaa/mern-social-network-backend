@@ -209,6 +209,9 @@ const updateUser = async (req, res) => {
             const hashedPassword = await bcrypt.hash(userToUpdate.password, 10)
             userToUpdate.password = hashedPassword;
         }
+        else {
+            delete userToUpdate.password;
+        }
 
         // update
         const updatedUser = await User.findByIdAndUpdate(userIdentity.id, userToUpdate, { new: true });
@@ -311,7 +314,6 @@ const getStats = async (req, res) => {
     try {
         let userId = req.user.id;
 
-
         if (req.params.id) {
             userId = req.params.id;
         }
@@ -324,6 +326,7 @@ const getStats = async (req, res) => {
 
         return res.status(200).json({
             status: "success",
+            userId,
             following,
             followed,
             posts,
