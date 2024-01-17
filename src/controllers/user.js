@@ -2,9 +2,12 @@ const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
+const Post = require('../models/Post');
 const { generateToken } = require('../services/jwt.js');
 const mongoosePagination = require('mongoose-pagination');
 const followService = require("../services/followUserIds.js");
+const Follow = require('../models/Follow.js');
+const { use } = require('../routes/user.js');
 
 
 // test action
@@ -304,6 +307,35 @@ const getImage = async (req, res) => {
     }
 }
 
+const getStats = async (req, res) => {
+    try {
+        let userId = req.user.id;
+
+
+        if (req.params.id) {
+            userId = req.params.id;
+        }
+
+        const following = await Follow.find({ user: userId }).countDocuments();
+
+        const followed = await Follow.find({ followed: userId }).countDocuments();
+
+        const posts = await Post.find({ user: userId }).countDocuments();
+
+        return res.status(200).json({
+            status: "success",
+            following,
+            followed,
+            posts,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            status: "failure",
+            message: error.message
+        });
+    }
+}
+
 module.exports = {
     testUser,
     login,
@@ -313,4 +345,5 @@ module.exports = {
     updateUser,
     uploadImage,
     getImage,
+    getStats,
 }
