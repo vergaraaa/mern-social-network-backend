@@ -29,7 +29,7 @@ router.route("/:id")
     .get(validateToken, getUser)
     .put(validateToken, updateUser);
 
-router.post("/upload-image", uploads.single("file"), uploadImage);
+router.post("/upload-image", [validateToken, uploads.single("file")], uploadImage);
 
 router.get("/image/:file", getImage);
 
