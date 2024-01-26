@@ -197,7 +197,7 @@ const updateUser = async (req, res) => {
         // check if username is taken
         user = await User.findOne({ username: userToUpdate.username });
 
-        if (user) {
+        if (user && user._id != userIdentity.id) {
             return res.status(409).json({
                 status: "failure",
                 message: "Username already exists"
