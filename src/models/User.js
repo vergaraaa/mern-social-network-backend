@@ -42,8 +42,8 @@ const UserSchema = Schema({
 UserSchema.method('toJSON', function () {
     // before object are the fields that i dont want to return
     // in user is stored the fields that i want to return
-    const { __v, _id, password, role_user, ...user } = this.toObject();
-    user.id = _id;
+    const { __v, password, role_user, ...user } = this.toObject();
+    // user.id = _id;
 
     return user;
 });

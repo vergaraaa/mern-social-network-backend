@@ -19,8 +19,7 @@ const PostSchema = new Schema({
 });
 
 PostSchema.method('toJSON', function () {
-    const { __v, _id, ...post } = this.toObject();
-    post.id = _id;
+    const { __v, ...post } = this.toObject();
 
     return post;
 });

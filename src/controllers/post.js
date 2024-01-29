@@ -18,7 +18,7 @@ const createPost = async (req, res) => {
 
         // create new post
         let newPost = Post(body);
-        newPost.user = req.user.id;
+        newPost.user = req.user._id;
 
         await newPost.save();
 
@@ -40,7 +40,7 @@ const deletePost = async (req, res) => {
 
         const post = await Post.findOneAndDelete({
             _id: id,
-            user: req.user.id
+            user: req.user._id
         });
 
         if (!post) {
@@ -112,9 +112,6 @@ const uploadPostImage = async (req, res) => {
         const imageSplit = image.split("\.");
         const extension = imageSplit[1].toLowerCase();
 
-        console.log(extension != "png" && extension != "jpg" &&
-            extension != "jpeg" && extension != "gif");
-
         // validate extension
         if (extension != "png" && extension != "jpg" &&
             extension != "jpeg" && extension != "gif") {
@@ -131,7 +128,7 @@ const uploadPostImage = async (req, res) => {
         }
 
         let postUpdated = await Post.findOneAndUpdate(
-            { user: req.user.id, _id: postId },
+            { user: req.user._id, _id: postId },
             { file: req.file.filename },
             { new: true }
         );
@@ -195,7 +192,7 @@ const getFeed = async (req, res) => {
         const itemsPerPage = 5;
 
         // get following
-        const { following } = await followService.followUserIds(req.user.id);
+        const { following } = await followService.followUserIds(req.user._id);
 
         const total = await Post.find({ user: { $in: following } }).countDocuments();
 

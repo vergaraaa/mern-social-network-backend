@@ -20,8 +20,7 @@ const FollowSchema = Schema({
 FollowSchema.method('toJSON', function () {
     // before object are the fields that i dont want to return
     // in user is stored the fields that i want to return
-    const { __v, _id, ...follow } = this.toObject();
-    follow.id = _id;
+    const { __v, ...follow } = this.toObject();
 
     return follow;
 });

@@ -129,7 +129,7 @@ const getUser = async (req, res) => {
         }
 
         // following info
-        const followInfo = await followService.followThisUser(req.user.id, id);
+        const followInfo = await followService.followThisUser(req.user._id, id);
 
         return res.status(200).json({
             status: "success",
@@ -159,7 +159,7 @@ const getUsers = async (req, res) => {
             .paginate(page, itemsPerPage);
 
         // following info
-        const followUserIds = await followService.followUserIds(req.user.id);
+        const followUserIds = await followService.followUserIds(req.user._id);
 
         return res.status(200).json({
             status: "success",
@@ -187,7 +187,7 @@ const updateUser = async (req, res) => {
         // check if email is taken
         let user = await User.findOne({ email: userToUpdate.email });
 
-        if (user && user._id != userIdentity.id) {
+        if (user && user._id != userIdentity._id) {
             return res.status(409).json({
                 status: "failure",
                 message: "Email already exists"
@@ -197,7 +197,7 @@ const updateUser = async (req, res) => {
         // check if username is taken
         user = await User.findOne({ username: userToUpdate.username });
 
-        if (user && user._id != userIdentity.id) {
+        if (user && user._id != userIdentity._id) {
             return res.status(409).json({
                 status: "failure",
                 message: "Username already exists"
@@ -214,7 +214,7 @@ const updateUser = async (req, res) => {
         }
 
         // update
-        const updatedUser = await User.findByIdAndUpdate(userIdentity.id, userToUpdate, { new: true });
+        const updatedUser = await User.findByIdAndUpdate(userIdentity._id, userToUpdate, { new: true });
 
         return res.status(200).json({
             status: "success",
@@ -262,7 +262,7 @@ const uploadImage = async (req, res) => {
         }
 
         let userUpdated = await User.findOneAndUpdate(
-            { _id: req.user.id },
+            { _id: req.user._id },
             { image: req.file.filename },
             { new: true }
         );
@@ -312,7 +312,7 @@ const getImage = async (req, res) => {
 
 const getStats = async (req, res) => {
     try {
-        let userId = req.user.id;
+        let userId = req.user._id;
 
         if (req.params.id) {
             userId = req.params.id;
