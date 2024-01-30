@@ -312,7 +312,7 @@ const getImage = async (req, res) => {
 
 const getStats = async (req, res) => {
     try {
-        let userId = req.user._id;
+        let userId = req.user.id;
 
         if (req.params.id) {
             userId = req.params.id;
