@@ -128,7 +128,7 @@ const uploadPostImage = async (req, res) => {
         }
 
         let postUpdated = await Post.findOneAndUpdate(
-            { user: req.user._id, _id: postId },
+            { user: req.user.id, _id: postId },
             { file: req.file.filename },
             { new: true }
         );

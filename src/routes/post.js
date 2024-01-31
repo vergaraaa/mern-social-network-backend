@@ -22,7 +22,7 @@ router.delete("/delete/:id", validateToken, deletePost);
 router.get("/user/:id/:page?", validateToken, getUserPosts);
 
 router.post("/upload-image/:id", [
-    uploads.single("file"), validateToken
+    validateToken, uploads.single("file"),
 ], uploadPostImage);
 
 router.get("/image/:file", getImage);
