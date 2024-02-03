@@ -129,7 +129,9 @@ const getUser = async (req, res) => {
         }
 
         // following info
-        const followInfo = await followService.followThisUser(req.user._id, id);
+        const followInfo = await followService.followThisUser(req.user.id, id);
+
+        console.log(followInfo);
 
         return res.status(200).json({
             status: "success",
@@ -159,7 +161,7 @@ const getUsers = async (req, res) => {
             .paginate(page, itemsPerPage);
 
         // following info
-        const followUserIds = await followService.followUserIds(req.user._id);
+        const followUserIds = await followService.followUserIds(req.user.id);
 
         return res.status(200).json({
             status: "success",
