@@ -193,7 +193,7 @@ const getFeed = async (req, res) => {
         const itemsPerPage = 5;
 
         // get following
-        const { following } = await followService.followUserIds(req.user._id);
+        const { following } = await followService.followUserIds(req.user.id);
 
         const total = await Post.find({ user: { $in: following } }).countDocuments();
 
