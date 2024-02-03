@@ -131,8 +131,6 @@ const getUser = async (req, res) => {
         // following info
         const followInfo = await followService.followThisUser(req.user.id, id);
 
-        console.log(followInfo);
-
         return res.status(200).json({
             status: "success",
             user,

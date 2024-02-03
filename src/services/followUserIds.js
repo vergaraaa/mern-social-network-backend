@@ -35,11 +35,6 @@ const followThisUser = async (userId, profileUserId) => {
     let follower = await Follow
         .findOne({ user: profileUserId, followed: userId });
 
-    console.log(userId);
-    console.log(profileUserId);
-    console.log(following);
-    console.log(follower);
-
     return {
         following,
         follower,
