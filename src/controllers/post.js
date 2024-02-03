@@ -40,7 +40,7 @@ const deletePost = async (req, res) => {
 
         const post = await Post.findOneAndDelete({
             _id: id,
-            user: req.user._id
+            user: req.user.id
         });
 
         if (!post) {
