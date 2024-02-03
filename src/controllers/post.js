@@ -81,7 +81,8 @@ const getUserPosts = async (req, res) => {
         return res.status(200).json({
             status: "success",
             page,
-            total: Math.ceil(total / itemsPerPage),
+            total,
+            pages: Math.ceil(total / itemsPerPage),
             posts,
         });
     } catch (error) {
