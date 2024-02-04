@@ -3,11 +3,12 @@ const path = require('path');
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const Post = require('../models/Post');
+const { use } = require('../routes/user.js');
+const Follow = require('../models/Follow.js');
+const validate = require('../helpers/validate.js');
 const { generateToken } = require('../services/jwt.js');
 const mongoosePagination = require('mongoose-pagination');
 const followService = require("../services/followUserIds.js");
-const Follow = require('../models/Follow.js');
-const { use } = require('../routes/user.js');
 
 
 // test action
@@ -16,6 +17,7 @@ const testUser = (req, res) => {
         message: "Message sent from controllers/user.js",
         user: req.user,
     });
+
 };
 
 const login = async (req, res) => {
@@ -77,6 +79,8 @@ const createUser = async (req, res) => {
                 message: "Missing data"
             });
         }
+
+        // validate(body);
 
         const users = await User.find({
             $or: [
